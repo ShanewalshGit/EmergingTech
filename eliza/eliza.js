@@ -20,14 +20,14 @@ document.getElementById('sendMessage').addEventListener('click', function() {
     if(userMsg) { // if user input isn't empty, add it to the chat box
         addMessage('user', userMsg);
         // Get Eliza's response through its method
-        const elizaRes = elizaResponse(userMsg);
+        getElizaResponse(userMsg);
         document.getElementById('userMsg').value = ''; // Clear the input field
         
     }
 });
 
 // Function for getting Eliza's response
-function elizaResponse(userMsg) {
+function getElizaResponse(userMsg) {
     // Check if the user input matches any of the predefined responses
     userMsg = userMsg.toLowerCase();
     if(responses[userMsg]) {
