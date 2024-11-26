@@ -30,16 +30,20 @@ function getElizaResponse(userMsg) {
     for (const response in responses) {
         // Create regex for use on the current response, case insensitive
         const regex = new RegExp(response, 'i');
+        console.log(regex);
         // Check if the user input matches the current response
         const match = userMsg.match(regex);
+        console.log(match);
         if (match) {
             // Get a random response from the current response's array
             const responseArray = responses[response];
+            console.log(responseArray);
             const randomResponse = responseArray[Math.floor(Math.random() * responseArray.length)];
             // Replace $1, $2, etc. with the captured groups from the match
             const formattedResponse = randomResponse.replace(/\$(\d+)/g, function(match, group) {
                 return match.replace('$' + group, match[group]);
             });
+            console.log(formattedResponse);
             // Reflect the user's words in the response
             const reflectedResponse = reflect(formattedResponse);
             // Add the response to the chat box
@@ -47,7 +51,6 @@ function getElizaResponse(userMsg) {
             return;
         }
     }
-
     // If no response was found, add a default response
     addMessage('eliza', 'I\'m sorry, I didn\'t understand that. Can you please rephrase or ask another question?');
 }
