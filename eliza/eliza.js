@@ -35,19 +35,12 @@ function getElizaResponse(userMsg) {
         const match = userMsg.match(regex);
         console.log(match);
         if (match) {
-            // Get a random response from the current response's array
-            const responseArray = responses[response];
-            console.log(responseArray);
-            const randomResponse = responseArray[Math.floor(Math.random() * responseArray.length)];
-            // Replace $1, $2, etc. with the captured groups from the match
-            const formattedResponse = randomResponse.replace(/\$(\d+)/g, function(match, group) {
-                return match.replace('$' + group, match[group]);
-            });
-            console.log(formattedResponse);
-            // Reflect the user's words in the response
-            const reflectedResponse = reflect(formattedResponse);
-            // Add the response to the chat box
-            addMessage('eliza', reflectedResponse);
+            // Select a random eliza response from the matched one
+            const response = responses[response][Math.floor(Math.random() * responses[response].length)];
+            // Reflect captured groups to make the response more natural
+            const reflectedGroups = match.slice(1).map(reflect);
+            // Replace placeholders in the response with reflected groups and add the message
+            addMessage('eliza', response.replace(/\{(\d+)\}/g, (_, index) => reflectedGroups[index]));
             return;
         }
     }
