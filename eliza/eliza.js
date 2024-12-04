@@ -15,32 +15,21 @@ function addMessage(sender, message) {
 
 // Function for getting Eliza's response
 function getElizaResponse(userMsg) {
-    /* Old implementation
-    // Check if the user input matches any of the predefined responses
-    userMsg = userMsg.toLowerCase();
-    if(responses[userMsg]) {
-        addMessage('eliza', responses[userMsg]);
-    } else {
-        addMessage('eliza', 'I\'m sorry, I didn\'t understand that. Can you please rephrase or ask another question?');
-    }
-
-    */
-
     // Iterate over each response in the responses object
-    for (const response in responses) {
-        // Create regex for use on the current response, case insensitive
-        const regex = new RegExp(response, 'i');
-        console.log(regex);
-        // Check if the user input matches the current response
+    for (const pattern in responses) {
+        const regex = new RegExp(pattern, 'i');
         const match = userMsg.match(regex);
-        console.log(match);
+        
         if (match) {
-            // Select a random eliza response from the matched one
-            const response = responses[response][Math.floor(Math.random() * responses[response].length)];
-            // Reflect captured groups to make the response more natural
+            // Get random response from matched pattern
+            const selectedResponse = responses[pattern][Math.floor(Math.random() * responses[pattern].length)];
+            
+            // Handle the reflection of captured groups
             const reflectedGroups = match.slice(1).map(reflect);
-            // Replace placeholders in the response with reflected groups and add the message
-            addMessage('eliza', response.replace(/\{(\d+)\}/g, (_, index) => reflectedGroups[index]));
+            
+            // Replace $1, $2, etc with reflected groups
+            const finalResponse = selectedResponse.replace(/\$(\d+)/g, (_, i) => reflectedGroups[i-1] || '');
+            addMessage('eliza', finalResponse);
             return;
         }
     }
@@ -51,11 +40,12 @@ function getElizaResponse(userMsg) {
 // send button event listener
 document.getElementById('sendMessage').addEventListener('click', function() {
     // Get the user input and add it to the chat box
-    const userMsg = document.getElementById('userMsg').value;
+    const userMsg = document.getElementById('userMsg').value.trim();
     if(userMsg) { // if user input isn't empty, add it to the chat box
         addMessage('user', userMsg);
         // Get Eliza's response through its method
-        getElizaResponse(userMsg);
+        const response = getElizaResponse(userMsg);
+        addMessage('eliza', response);
         document.getElementById('userMsg').value = ''; // Clear the input field
     }
 });
@@ -69,28 +59,66 @@ document.getElementById('userMsg').addEventListener('keypress', function(e) {
 
 // function for reflecting user words for eliza response
 function reflect(text) {
+    if (!text) return '';
+    // Split the text into words and convert to lowercase
     const words = text.toLowerCase().split(' ');
-    for (let i = 0; i < words.length; i++) {
-        if (reflections[words[i]]) {
-            words[i] = reflections[words[i]];
-        }
-    }
-    return words.join(' ');
+    // Iterate over each word and return the reflection if it exists
+    return words.map(word => reflections[word] || word).join(' ');
 }
 
+// Reflections of user pronouns, verbs for use in eliza's response
+const reflections = {
+    "i": "you",
+    "me": "you",
+    "my": "your",
+    "am": "are",
+    "i'm": "you are",
+    "i'd": "you would",
+    "i've": "you have",
+    "i'll": "you will",
+    "you": "I",
+    "your": "my",
+    "yours": "mine",
+    "are": "am"
+};
 
 // Eliiza's responses - GPT generated for convenience
 // Define responses based on various patterns
 const responses = {
-    'hello|hi|hey': [
+    '(hello|hi|hey)': [
         "Hello! How are you feeling today?",
-        "Hi there! What’s on your mind?",
+        "Hi there! What's on your mind?",
         "Hey! How can I help you?"
     ],
     'you remind me of (.*)': [
         "Why do you think I remind you of $1?",
         "What makes you think of $1 when talking to me?",
         "Is it a good feeling to be reminded of $1?"
+    ],
+    '(.*) I remember (.*)': [
+        "What else do you remember about $2?",
+        "How do you feel when you remember $2?",
+        "What made you remember $2?"
+    ],
+    '(.*) I want (.*)': [
+        "Why do you want $2?",
+        "What would you do if you got $2?",
+        "What would getting $2 mean to you?"
+    ],
+    '(.*) I dreamt (.*)': [
+        "What does that dream suggest to you?",
+        "How do you feel about that dream?",
+        "What do you think that dream means?"
+    ],
+    '(.*) I believe (.*)': [
+        "Why do you think $2?",
+        "Do you really believe $2?",
+        "What would it mean if $2 was true?"
+    ],
+    '(.*) I think (.*)': [
+        "Why do you think $2?",
+        "How do you feel about $2?",
+        "What would it mean if $2 was true?"
     ],
     '(.*) mother|father|family|parent(.*)': [
         "Tell me more about your family.",
@@ -112,7 +140,7 @@ const responses = {
         "Does feeling $2 happen often?",
         "How does that feeling affect you?"
     ],
-    '(.*) (sorry|apologize)(.*)': [
+    '(.*)(sorry|apologize)(.*)': [
         "No need to apologize.",
         "Apologies aren't necessary. Why do you feel that way?",
         "It’s okay to feel that way."
@@ -129,16 +157,4 @@ const responses = {
         "What do you mean by that?",
         "Interesting... go on."
     ],
-};
-
-// Reflections of user pronouns, verbs for use in eliza's response
-const reflections = {
-    "I": "you",
-    "me": "you",
-    "my": "your",
-    "am": "are",
-    "you": "I",
-    "your": "my",
-    "yours": "mine",
-    "are": "am",
 };
