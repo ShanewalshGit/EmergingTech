@@ -27,14 +27,12 @@ function getElizaResponse(userMsg) {
             // Handle the reflection of captured groups
             const reflectedGroups = match.slice(1).map(reflect);
             
-            // Replace $1, $2, etc with reflected groups
-            const finalResponse = selectedResponse.replace(/\$(\d+)/g, (_, i) => reflectedGroups[i-1] || '');
-            addMessage('eliza', finalResponse);
-            return;
+            // Replace $1, $2, etc with reflected groups and return the response
+            return selectedResponse.replace(/\$(\d+)/g, (_, i) => reflectedGroups[i-1] || '');
         }
     }
     // If no response was found, add a default response
-    addMessage('eliza', 'I\'m sorry, I didn\'t understand that. Can you please rephrase or ask another question?');
+    return 'I\'m sorry, I didn\'t understand that. Can you please rephrase or ask another question?';
 }
 
 // send button event listener
@@ -45,7 +43,7 @@ document.getElementById('sendMessage').addEventListener('click', function() {
         addMessage('user', userMsg);
         // Get Eliza's response through its method
         const response = getElizaResponse(userMsg);
-        addMessage('eliza', response);
+        addMessage('eliza', response); // Add Eliza's response to the chat box
         document.getElementById('userMsg').value = ''; // Clear the input field
     }
 });
@@ -82,25 +80,39 @@ const reflections = {
     "are": "am"
 };
 
-// Eliiza's responses - GPT generated for convenience
-// Define responses based on various patterns
+// Eliiza's responses - GPT generated for convenience, though getting the pattern responses right took some more effort on my part
+// Define responses based on various patterns, with more specific patterns first
 const responses = {
-    '(hello|hi|hey)': [
+    // ^ and $ anchors ensure they match specific phrases, \\s handles whitespace
+    '^(hello|hi|hey)\\s*$': [
         "Hello! How are you feeling today?",
         "Hi there! What's on your mind?",
         "Hey! How can I help you?"
     ],
-    'you remind me of (.*)': [
+    // (.+) and (.*) for ensuring there's content to capture
+    'you remind me of (.+)': [
         "Why do you think I remind you of $1?",
         "What makes you think of $1 when talking to me?",
         "Is it a good feeling to be reminded of $1?"
     ],
-    '(.*) I remember (.*)': [
+    // .* for natural beginnings and ends of sentences
+    '.*i remember (.+)': [
         "What else do you remember about $2?",
         "How do you feel when you remember $2?",
         "What made you remember $2?"
     ],
-    '(.*) I want (.*)': [
+    // ? for optional words
+    '.*i (?:am|feel) (.+)': [
+        "Why do you feel $1?",
+        "How long have you felt $1?",
+        "Does being $1 bother you?"
+    ],
+    '.*i need (.+)': [
+        "Why do you need $1?",
+        "What would it mean to you if you got $1?",
+        "What if you never got $1?"
+    ],
+    '.*i want (.+)': [
         "Why do you want $2?",
         "What would you do if you got $2?",
         "What would getting $2 mean to you?"
@@ -125,32 +137,17 @@ const responses = {
         "How does that make you feel about your family?",
         "What role does your family play in your thoughts?"
     ],
-    '(.*) I need (.*)': [
-        "Why do you need $2?",
-        "Would getting $2 really help you?",
-        "What if you didn’t need $2?"
-    ],
-    '(.*) I am (.*)': [
-        "Why do you think you are $2?",
-        "How long have you felt that way?",
-        "What made you feel like $2?"
-    ],
-    '(.*) I feel (.*)': [
-        "Why do you feel $2?",
-        "Does feeling $2 happen often?",
-        "How does that feeling affect you?"
-    ],
-    '(.*)(sorry|apologize)(.*)': [
+    '.*(sorry|apologize).*': [
         "No need to apologize.",
         "Apologies aren't necessary. Why do you feel that way?",
         "It’s okay to feel that way."
     ],
-    'bye|goodbye|exit': [
-        "Goodbye! Take care.",
-        "Thank you for sharing. Goodbye!",
-        "Bye! I’m here if you need to talk again."
+    '^(goodbye|bye|exit)\\s*$': [
+        "Goodbye. Thank you for talking with me.",
+        "It was nice talking to you. Goodbye!",
+        "I hope we can talk again soon. Bye!"
     ],
-    '(.*)': [
+    '.*': [
         "Can you tell me more?",
         "Why do you say that?",
         "How does that make you feel?",
