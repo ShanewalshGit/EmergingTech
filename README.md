@@ -2,7 +2,7 @@
 Student ID: G00406694
 Name: Shane Walsh
 
-This repository contains projects and tasks completed as part of the Emerging Technologies module at Atlantic Technological University (ATU). The repository is divided into two main sections: a tasks folder with various assignments exploring trigrams and an ELIZA chatbot project.
+This repository contains projects and tasks completed as part of the Emerging Technologies module at Atlantic Technological University (ATU). In this module, we explored AI, how it's evolving and Large Language models. The repository is divided into two main sections: a tasks folder with various assignments exploring trigrams and an ELIZA chatbot project. Both reflecting what we studied for the semester. 
 
 ### Trigrams
 
@@ -11,11 +11,14 @@ The [`tasks`](tasks) folder contains a Jupyter notebook (`trigrams.ipynb`) that 
 - Cleaning text data by removing unwanted characters and converting it to uppercase.
 - Building a trigram model by counting occurrences of three-character sequences.
 - Merging multiple trigram models into one for a collective count.
-- Processing text files to extract and analyze trigrams.
+- Processing text files to extract and analyze trigrams, JSON file exporting.
 
 ### ELIZA Chatbot Project
 
 The [`eliza`](eliza) folder contains an implementation of the ELIZA chatbot using HTML, CSS, and JavaScript. The chatbot simulates a conversation with a psychotherapist by reflecting user inputs and generating responses. It implements reflections of user wording in responses and REGEX. This is complete with a general visual look akin to chatbots seen today.
+
+### Link to Eliza GitHub Page
+https://shanewalshgit.github.io/EmergingTech/
 
 ## How to Run This Repository
 
